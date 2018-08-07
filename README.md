@@ -17,3 +17,5 @@ Zabbix Template and PowerShell script with Low Level Discovery (LLD) for Adaptec
  - Adaptec 2405
  - Adaptec 5405
 
+## Notice
+Script written with LLD-support for Multi-controller env - BUT not tested! Please notify me if check this in those conf
