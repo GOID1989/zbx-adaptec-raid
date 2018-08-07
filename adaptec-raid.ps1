@@ -1,4 +1,16 @@
-﻿Param (
+﻿<#
+    .SYNOPSIS
+    Script with LLD support for getting data from Adaptec RAID Controller to Zabbix monitoring system.
+
+    .DESCRIPTION
+    The script may generate LLD data for Adaptec RAID Controllers, Logical Drives, Physical Drives.
+
+    .NOTES
+    Author: GOID1989
+    Github: https://github.com/GOID1989/zbx-adaptec-raid
+#>
+
+Param (
 [switch]$version = $false,
 [ValidateSet("lld","health")][Parameter(Position=0, Mandatory=$True)][string]$action,
 [ValidateSet("ad","ld","pd")][Parameter(Position=1, Mandatory=$True)][string]$part,
@@ -6,7 +18,7 @@
 [string][Parameter(Position=3)]$partid
 )
 
-$cli = "C:\adaptec\asm\cmdline\arcconf.exe"
+$cli = "C:\Program Files\Adaptec\Adaptec Storage Manager\arcconf.exe"
 
 function LLDControllers()
 {
@@ -37,16 +49,22 @@ function LLDLogicalDrives()
         $res = $response -match '[:\s](\d+)'
         $ld_count = $Matches[1]
 
-        for($j = 0; $j -lt $ld_count; $j++){
-            [array]$response = & $cli "GETCONFIG $i ld $j".Split() | Where-Object {$_ -match "Logical device name|RAID level"}
+        #Get IDs of logical devices
+        [array]$response = & $cli "GETCONFIG $i ld".Split() | Where-Object {$_ -match "Logical device number"}
+
+        foreach($logical_dev in $response){
+            $res = ($logical_dev -match '\d+$')
+            $ld_id = $Matches[0]
+
+            [array]$response = & $cli "GETCONFIG $i ld $ld_id".Split() | Where-Object {$_ -match "Logical device name|RAID level"}
 
             $ld_name = ($response[0] -split ':')[1].Trim()
             $ld_raid = ($response[1] -split ':')[1].Trim()
 
             # If name of LD not set
-            if($ld_name -eq "") { $ld_name = $j }
+            if($ld_name -eq "") { $ld_name = $ld_id }
 
-            $ld_info = [string]::Format('{{"{{#CTRL.ID}}":"{0}","{{#LD.ID}}":"{1}","{{#LD.NAME}}":"{2}","{{#LD.RAID}}":"{3}"}},',$i,$j, $ld_name,$ld_raid)
+            $ld_info = [string]::Format('{{"{{#CTRL.ID}}":"{0}","{{#LD.ID}}":"{1}","{{#LD.NAME}}":"{2}","{{#LD.RAID}}":"{3}"}},',$i,$ld_id, $ld_name,$ld_raid)
             $ld_json += $ld_info
         }
     }
