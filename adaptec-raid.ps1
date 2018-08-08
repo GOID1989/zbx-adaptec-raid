@@ -1,4 +1,7 @@
 ﻿<#
+    .VERSION
+    0.2
+    
     .SYNOPSIS
     Script with LLD support for getting data from Adaptec RAID Controller to Zabbix monitoring system.
 
@@ -13,7 +16,7 @@
 Param (
 [switch]$version = $false,
 [ValidateSet("lld","health")][Parameter(Position=0, Mandatory=$True)][string]$action,
-[ValidateSet("ad","ld","pd")][Parameter(Position=1, Mandatory=$True)][string]$part,
+[ValidateSet("ad","ld","pd","bt")][Parameter(Position=1, Mandatory=$True)][string]$part,
 [string][Parameter(Position=2)]$ctrlid,
 [string][Parameter(Position=3)]$partid
 )
@@ -33,6 +36,26 @@ function LLDControllers()
 
         $ctrl_info = [string]::Format('{{"{{#CTRL.ID}}":"{0}","{{#CTRL.MODEL}}":"{1}","{{#CTRL.SN}}":"{2}"}},',$i,$ctrl_model, $ctrl_sn)
         $ctrl_json += $ctrl_info
+    }
+
+    $lld_data = '{"data":[' + $($ctrl_json -replace ',$') + ']}'
+    return $lld_data
+}
+
+function LLDBattery()
+{
+    $response = & $cli "GETVERSION".Split() | Where-Object {$_ -match "^Controllers found"}
+    $ctrl_count = ($response -replace 'Controllers found: ','').Trim()
+
+    for($i = 1; $i -le $ctrl_count; $i++ ){
+        $response = & $cli "GETCONFIG $i ad".Split() | Where-Object {$_ -match "Controller Battery Information"}
+        if($response.Length -ne 0){
+            $response = & $cli "GETCONFIG $i ad".Split() | Where-Object {$_ -match "^\s+Status\s+[:]"}
+            if($response.Length -gt 0) {
+                $ctrl_info = [string]::Format('{{"{{#CTRL.ID}}":"{0}","{{#CTRL.BATTERY}}":"{1}"}},',$i,$i)
+                $ctrl_json += $ctrl_info
+            } 
+        }
     }
 
     $lld_data = '{"data":[' + $($ctrl_json -replace ',$') + ']}'
@@ -97,12 +120,31 @@ function LLDPhysicalDrives()
 
 function GetControllerStatus()
 {
-    $response = & $cli "GETCONFIG $ctrlid ad".Split() | Where-Object {$_ -match "Controller Status"}
-    $ctrl_status = ($response -split ':')[1].Trim()
-
-    # Exctract Celsius value
-        #$res = $response[9] -match '(\d+).*[C]'
-        #$ctrl_temperature = $Matches[1]
+    Param (
+        # Controller component
+        [ValidateSet("main","battery","temperature")][string]$ctrl_part
+    )
+    
+    switch($ctrl_part){
+        "main" {
+            $response = & $cli "GETCONFIG $ctrlid ad".Split() | Where-Object {$_ -match "Controller Status"}
+            $ctrl_status = ($response -split ':')[1].Trim()
+        }
+        "battery" {
+            $response = & $cli "GETCONFIG $ctrlid ad".Split() | Where-Object {$_ -match "^\s+Status\s+[:]"}
+            if($response.Length -ne 0) {
+                $ctrl_status = ($response -split ':')[1].Trim()
+            } else {
+                $ctrl_status = "No battery module"
+            }
+        }
+        "temperature" {
+            $response = & $cli "GETCONFIG $ctrlid ad".Split() | Where-Object {$_ -match "^\s+Temperature\s+[:]"}
+            # Exctract Celsius value
+            $res = $response -match '(\d+).*[C]'
+            $ctrl_status = $Matches[1]
+        }
+    }
 
     return $ctrl_status
 }
@@ -128,11 +170,12 @@ switch($action){
             "ad" { write-host $(LLDControllers) }
             "ld" { write-host $(LLDLogicalDrives)}
             "pd" { write-host $(LLDPhysicalDrives)}
+            "bt" { write-host $(LLDBattery)}
         }
     }
     "health" {
         switch($part) {
-            "ad" { write-host $(GetControllerStatus) }
+            "ad" { write-host $(GetControllerStatus -ctrl_part $partid) }
             "ld" { write-host $(GetLogicalDriveStatus)}
             "pd" { write-host $(GetPhysicalDriveStatus)  }
         }

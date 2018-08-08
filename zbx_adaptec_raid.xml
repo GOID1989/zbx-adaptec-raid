@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <zabbix_export>
     <version>3.4</version>
-    <date>2018-08-07T20:40:31Z</date>
+    <date>2018-08-08T14:25:20Z</date>
     <groups>
         <group>
             <name>Templates</name>
@@ -21,7 +21,7 @@
             <items/>
             <discovery_rules>
                 <discovery_rule>
-                    <name>Adaptec Controllers</name>
+                    <name>Adaptec Controllers Discovery</name>
                     <type>7</type>
                     <snmp_community/>
                     <snmp_oid/>
@@ -57,7 +57,7 @@
                             <type>7</type>
                             <snmp_community/>
                             <snmp_oid/>
-                            <key>adaptec.raid[health,ad,{#CTRL.ID}]</key>
+                            <key>adaptec.raid[health,ad,{#CTRL.ID},main]</key>
                             <delay>5m</delay>
                             <history>90d</history>
                             <trends>0</trends>
@@ -94,13 +94,71 @@
                             </application_prototypes>
                             <master_item_prototype/>
                         </item_prototype>
+                        <item_prototype>
+                            <name>Adaptec Controller No.{#CTRL.ID} Temperature</name>
+                            <type>7</type>
+                            <snmp_community/>
+                            <snmp_oid/>
+                            <key>adaptec.raid[health,ad,{#CTRL.ID},temperature]</key>
+                            <delay>5m</delay>
+                            <history>30d</history>
+                            <trends>90d</trends>
+                            <status>0</status>
+                            <value_type>3</value_type>
+                            <allowed_hosts/>
+                            <units/>
+                            <snmpv3_contextname/>
+                            <snmpv3_securityname/>
+                            <snmpv3_securitylevel>0</snmpv3_securitylevel>
+                            <snmpv3_authprotocol>0</snmpv3_authprotocol>
+                            <snmpv3_authpassphrase/>
+                            <snmpv3_privprotocol>0</snmpv3_privprotocol>
+                            <snmpv3_privpassphrase/>
+                            <params/>
+                            <ipmi_sensor/>
+                            <authtype>0</authtype>
+                            <username/>
+                            <password/>
+                            <publickey/>
+                            <privatekey/>
+                            <port/>
+                            <description/>
+                            <inventory_link>0</inventory_link>
+                            <applications/>
+                            <valuemap/>
+                            <logtimefmt/>
+                            <preprocessing/>
+                            <jmx_endpoint/>
+                            <application_prototypes>
+                                <application_prototype>
+                                    <name>Adaptec Controllers</name>
+                                </application_prototype>
+                            </application_prototypes>
+                            <master_item_prototype/>
+                        </item_prototype>
                     </item_prototypes>
                     <trigger_prototypes>
                         <trigger_prototype>
-                            <expression>{Adaptec RAID Controller Template:adaptec.raid[health,ad,{#CTRL.ID}].regexp(Optimal)}=0</expression>
+                            <expression>{Adaptec RAID Controller Template:adaptec.raid[health,ad,{#CTRL.ID},main].regexp(Optimal)}=0</expression>
                             <recovery_mode>0</recovery_mode>
                             <recovery_expression/>
-                            <name>Adaptec Controller {$CTRL.ID} Status</name>
+                            <name>Adaptec Controller No.{#CTRL.ID} Status</name>
+                            <correlation_mode>0</correlation_mode>
+                            <correlation_tag/>
+                            <url/>
+                            <status>0</status>
+                            <priority>2</priority>
+                            <description/>
+                            <type>0</type>
+                            <manual_close>0</manual_close>
+                            <dependencies/>
+                            <tags/>
+                        </trigger_prototype>
+                        <trigger_prototype>
+                            <expression>{Adaptec RAID Controller Template:adaptec.raid[health,ad,{#CTRL.ID},temperature].last()}&gt;85</expression>
+                            <recovery_mode>0</recovery_mode>
+                            <recovery_expression/>
+                            <name>Adaptec Controller No.{#CTRL.ID} Temperature</name>
                             <correlation_mode>0</correlation_mode>
                             <correlation_tag/>
                             <url/>
@@ -118,7 +176,100 @@
                     <jmx_endpoint/>
                 </discovery_rule>
                 <discovery_rule>
-                    <name>Adaptec Logical Drives</name>
+                    <name>Adaptec Battery No.{#CTRL.ID} state</name>
+                    <type>7</type>
+                    <snmp_community/>
+                    <snmp_oid/>
+                    <key>adaptec.raid[lld,bt]</key>
+                    <delay>30s</delay>
+                    <status>0</status>
+                    <allowed_hosts/>
+                    <snmpv3_contextname/>
+                    <snmpv3_securityname/>
+                    <snmpv3_securitylevel>0</snmpv3_securitylevel>
+                    <snmpv3_authprotocol>0</snmpv3_authprotocol>
+                    <snmpv3_authpassphrase/>
+                    <snmpv3_privprotocol>0</snmpv3_privprotocol>
+                    <snmpv3_privpassphrase/>
+                    <params/>
+                    <ipmi_sensor/>
+                    <authtype>0</authtype>
+                    <username/>
+                    <password/>
+                    <publickey/>
+                    <privatekey/>
+                    <port/>
+                    <filter>
+                        <evaltype>0</evaltype>
+                        <formula/>
+                        <conditions/>
+                    </filter>
+                    <lifetime>30d</lifetime>
+                    <description/>
+                    <item_prototypes>
+                        <item_prototype>
+                            <name>Adaptec Battery No.{#CTRL.ID} state</name>
+                            <type>7</type>
+                            <snmp_community/>
+                            <snmp_oid/>
+                            <key>adaptec.raid[health,ad,{#CTRL.ID},battery]</key>
+                            <delay>30s</delay>
+                            <history>90d</history>
+                            <trends>0</trends>
+                            <status>0</status>
+                            <value_type>4</value_type>
+                            <allowed_hosts/>
+                            <units/>
+                            <snmpv3_contextname/>
+                            <snmpv3_securityname/>
+                            <snmpv3_securitylevel>0</snmpv3_securitylevel>
+                            <snmpv3_authprotocol>0</snmpv3_authprotocol>
+                            <snmpv3_authpassphrase/>
+                            <snmpv3_privprotocol>0</snmpv3_privprotocol>
+                            <snmpv3_privpassphrase/>
+                            <params/>
+                            <ipmi_sensor/>
+                            <authtype>0</authtype>
+                            <username/>
+                            <password/>
+                            <publickey/>
+                            <privatekey/>
+                            <port/>
+                            <description/>
+                            <inventory_link>0</inventory_link>
+                            <applications/>
+                            <valuemap/>
+                            <logtimefmt/>
+                            <preprocessing/>
+                            <jmx_endpoint/>
+                            <application_prototypes/>
+                            <master_item_prototype/>
+                        </item_prototype>
+                    </item_prototypes>
+                    <trigger_prototypes>
+                        <trigger_prototype>
+                            <expression>{Adaptec RAID Controller Template:adaptec.raid[health,ad,{#CTRL.ID},battery].regexp(Optimal)}=0</expression>
+                            <recovery_mode>0</recovery_mode>
+                            <recovery_expression/>
+                            <name>Adaptec Battery No.$CTRL.ID} Status</name>
+                            <correlation_mode>0</correlation_mode>
+                            <correlation_tag/>
+                            <url/>
+                            <status>0</status>
+                            <priority>2</priority>
+                            <description/>
+                            <type>0</type>
+                            <manual_close>0</manual_close>
+                            <dependencies/>
+                            <tags/>
+                        </trigger_prototype>
+                    </trigger_prototypes>
+                    <graph_prototypes/>
+                    <host_prototypes/>
+                    <jmx_endpoint/>
+                </discovery_rule>
+                <discovery_rule>
+                    <name>Adaptec Logical Drives Discovery</name>
                     <type>7</type>
                     <snmp_community/>
                     <snmp_oid/>
@@ -215,7 +366,7 @@
                     <jmx_endpoint/>
                 </discovery_rule>
                 <discovery_rule>
-                    <name>Adaptec Physical Drives</name>
+                    <name>Adaptec Physical Drives Discovery</name>
                     <type>7</type>
                     <snmp_community/>
                     <snmp_oid/>
