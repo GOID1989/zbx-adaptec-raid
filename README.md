@@ -8,8 +8,8 @@ Zabbix Template and PowerShell script with Low Level Discovery (LLD) for Adaptec
  - Add UserParameter to zabbix-agent config
 
 **ToDO:**
- - [ ] Temperature monitoring
- - [ ] Battery status check
+ - [X] Temperature monitoring
+ - [X] Battery status check
  
 **Tested on:**
  - Adaptec 6805
