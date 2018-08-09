@@ -24,4 +24,4 @@ For Windows and Linux.
 ## Notice
  - Script written with LLD-support for Multi-controller env - BUT not tested! Please notify me if check this in those conf.
  - On Linux machine Battery LLD not tested
- - Trigger value for Temperature got from ![Official Post](http://ask.microsemi.com/app/answers/detail/a_id/15345/~/temperature-requirement-for-series-2%2C-5%2C-6%2C-7%2C-and-8-adaptec-raid-controllers)
+ - Trigger value for Temperature got from [Official Post](http://ask.microsemi.com/app/answers/detail/a_id/15345/~/temperature-requirement-for-series-2%2C-5%2C-6%2C-7%2C-and-8-adaptec-raid-controllers)
