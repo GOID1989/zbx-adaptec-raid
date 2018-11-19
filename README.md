@@ -17,8 +17,10 @@ For Windows and Linux.
  - Adaptec 6405
  - Adaptec 2405
  - Adaptec 5405
+ - Adaptec 8885q
  - Windows 2008r2
  - Windows 2012r2
+ - Windows 2016
  - Debian 6
 
 ## Notice
