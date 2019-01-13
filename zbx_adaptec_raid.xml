@@ -251,7 +251,7 @@
                             <expression>{Adaptec RAID Controller Template:adaptec.raid[health,ad,{#CTRL.ID},battery].regexp(Optimal)}=0</expression>
                             <recovery_mode>0</recovery_mode>
                             <recovery_expression/>
-                            <name>Adaptec Battery No.$CTRL.ID} Status</name>
+                            <name>Adaptec Battery No.{#CTRL.ID} Status</name>
                             <correlation_mode>0</correlation_mode>
                             <correlation_tag/>
                             <url/>
