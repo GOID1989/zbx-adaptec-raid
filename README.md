@@ -7,6 +7,7 @@ For Windows and Linux.
 ## Prerequisites:
  - Adaptec Storage Manager CLI Tools (Windows and Linux)
  - Add UserParameter to zabbix-agent config
+ - Smartmon tool on linux if you wish to monitor the smart values of the drives
 
 **ToDO:**
  - [X] Temperature monitoring

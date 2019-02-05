@@ -13,7 +13,9 @@
 # Github: https://github.com/GOID1989/zbx-adaptec-raid
 #
 
-cli='/usr/StorMan/arcconf'
+cli='/usr/local/sbin/arcconf'
+cli_sg='/usr/bin/sg_scan'
+cli_smart='/usr/sbin/smartctl'
 
 action=$1
 part=$2
@@ -135,6 +137,23 @@ LLDPhysicalDrives() {
     echo $lld_data
 }
 
+LLDSmart() {
+need_write="0"
+echo "{"
+echo "\"data\":["
+$cli_sg | cut -f1 -d ":" | while read smart_dev
+do
+    if [ $need_write = "1" ]
+    then
+	echo ","
+    fi
+    echo "{\"{#ADAPTEC_DISK}\":\"$smart_dev\"}"
+    need_write="1"
+done
+echo "]"
+echo "}"
+}
+
 GetControllerStatus() {
     ctrl_id=$1
     ctrl_part=$2
@@ -173,6 +192,34 @@ GetPhysicalDriveStatus() {
 }
 
 
+GetSmartHealth() {
+    disk_dev=$1
+
+    disk_health=$($cli_smart -H $disk_dev | grep "SMART Health Status" | cut -f2 -d":" | sed -e 's/^ //' )
+    echo $disk_health
+}
+
+GetSmartTemp() {
+    disk_dev=$1
+
+    disk_temp=$($cli_smart -A $disk_dev | grep "Current Drive Temperature" | cut -f2 -d":" | cut -f1 -d"C" | sed -e 's/^ //' )
+    echo $disk_temp
+}
+
+GetSmartTripTemp() {
+    disk_dev=$1
+
+    disk_temp=$($cli_smart -A $disk_dev | grep "Drive Trip Temperature" | cut -f2 -d":" | cut -f1 -d"C" | sed -e 's/^ //' )
+    echo $disk_temp
+}
+
+GetSmartDefects() {
+    disk_dev=$1
+
+    disk_defects=$($cli_smart -A $disk_dev | grep "Elements in grown defect list" | cut -f2 -d":" | sed -e 's/^ //' )
+    echo $disk_defects
+}
+
 case "$action" in
     "lld")
 	case "$part" in
@@ -188,6 +235,9 @@ case "$action" in
 	    "bt")
 		LLDBattery
 	    ;;
+	    "smart")
+		LLDSmart
+	    ;;
 	esac
     ;;
     "health")
@@ -202,5 +252,24 @@ case "$action" in
 		GetPhysicalDriveStatus "$3" "$4"
 	    ;;
 	esac
+    ;;
+    "smart")
+	case "$part" in
+	    "health")
+		GetSmartHealth "$3" 
+	    ;;
+	    "temp")
+		GetSmartTemp "$3" 
+	    ;;
+	    "triptemp")
+		GetSmartTripTemp "$3" 
+	    ;;
+	    "defects")
+		GetSmartDefects "$3" 
+	    ;;
+	esac
+    ;;
+*)
+    echo "Invalid usage of script"
     ;;
 esac
