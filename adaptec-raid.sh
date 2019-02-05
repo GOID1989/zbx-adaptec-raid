@@ -87,7 +87,7 @@ LLDLogicalDrives() {
 	    ld_name=$($cli GETCONFIG $i LD $ld_id | grep "Logical device name" | cut -f2 -d":" | sed -e 's/^ //' )
 	    ld_raid=$($cli GETCONFIG $i LD $ld_id | grep "RAID level" | cut -f2 -d":" | sed -e 's/^ //' )
 	    
-	    if [ $ld_name = "" ]
+	    if [ "$ld_name" = "" ]
 	    then
 		ld_name=$ld_id
 	    fi
