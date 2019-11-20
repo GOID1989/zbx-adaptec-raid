@@ -51,15 +51,15 @@ LLDBattery() {
     bt_json=""
     while [ $i -le $ctrl_count ]
     do
-	#ctrl_bt=$($cli GETCONFIG $i AD | grep "Controller Battery Information" )
+	ctrl_bt=$($cli GETCONFIG $i AD | grep "Controller Battery Information" )
 	len=${#ctrl_bt}
 	if [ $len -ne 0 ]
 	then
-	    bt_status=$($cli GETCONFIG $ctrl_id AD | grep -E "^\s+Status\s+[:]" | cut -f2 -d":" | sed -e 's/^ //' )
+	    bt_status=$($cli GETCONFIG $i AD | grep -E "^\s+Status\s+[:]" | cut -f2 -d":" | sed -e 's/^ //' )
 	    len=${#bt_status}
 	    if [ $len -ne 0 ]
 	    then
-		bt_info="{\"{#CTRL.ID}\":\"$i\",\"{#CTRL.BATTERY}\":\"$i\"},"
+		bt_info="{\"{#CTRL.ID}\":\"$i\",\"{#CTRL.BATTERY}\":\"$bt_status\"},"
 		bt_json=$bt_json$bt_info
 	    fi
 	fi
@@ -83,7 +83,7 @@ LLDLogicalDrives() {
     do
 	ld_count=$($cli GETCONFIG $i AD | grep "Logical devices/Failed/Degraded" | cut -f2 -d":" | cut -f1 -d"/" | sed -e 's/^ //' )
 	
-	ld_ids=$($cli GETCONFIG $i LD | grep "Logical device number " | cut -f4 -d" " | sed -e 's/^ //' )
+	ld_ids=$($cli GETCONFIG $i LD | grep "Logical Device number " | cut -f4 -d" " | sed -e 's/^ //' )
 	
 	for ld_id in $ld_ids; do
 	    ld_name=$($cli GETCONFIG $i LD $ld_id | grep "Logical device name" | cut -f2 -d":" | sed -e 's/^ //' )
