@@ -59,7 +59,7 @@ LLDBattery() {
 	    len=${#bt_status}
 	    if [ $len -ne 0 ]
 	    then
-		bt_info="{\"{#CTRL.ID}\":\"$i\",\"{#CTRL.BATTERY}\":\"$bt_status\"},"
+		bt_info="{\"{#CTRL.ID}\":\"$i\",\"{#CTRL.BATTERY}\":\"$i\"},"
 		bt_json=$bt_json$bt_info
 	    fi
 	fi
