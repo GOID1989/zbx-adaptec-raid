@@ -13,12 +13,12 @@
 # Github: https://github.com/GOID1989/zbx-adaptec-raid
 #
 
-action=$1
-part=$2
-
 cli='/usr/local/sbin/arcconf'
 cli_sg='/usr/bin/sg_scan'
 cli_smart='/usr/sbin/smartctl'
+
+action=$1
+part=$2
 
 LLDControllers() {
     ctrl_count=$($cli GETCONFIG | grep "Controllers found:" | cut -f2 -d":" | xargs )
