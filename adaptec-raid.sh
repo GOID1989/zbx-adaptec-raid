@@ -83,7 +83,7 @@ LLDLogicalDrives() {
     do
 	ld_count=$($cli GETCONFIG $i AD | grep "Logical devices/Failed/Degraded" | cut -f2 -d":" | cut -f1 -d"/" | sed -e 's/^ //' )
 	
-	ld_ids=$($cli GETCONFIG $i LD | grep "Logical device number " | cut -f4 -d" " | sed -e 's/^ //' )
+	ld_ids=$($cli GETCONFIG $i LD | grep -i "Logical device number " | cut -f4 -d" " | sed -e 's/^ //' )
 	
 	for ld_id in $ld_ids; do
 	    ld_name=$($cli GETCONFIG $i LD $ld_id | grep "Logical device name" | cut -f2 -d":" | sed -e 's/^ //' )
